@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form action="">
+    <input type="file" id="file_input"/>
+    <button type="submit">Upload</button>
+  </form>
+  <div id="image-preview"></div>
+  <script>
+    document.querySelector("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fileInput = document.querySelector("#file_input");
+      const file = fileInput.files[0];
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("http://localhost:3080/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const base64Data = data.base64Data;
+        const imagePreview = document.getElementById("image-preview");
+        imagePreview.innerHTML =` <img src="data:image/${data.contentType};base64,${base64Data}" alt="Uploaded Image">`;
+        console.log(data)
+      } else {
+        console.error("Error uploading image");
+      }
+    });
+  </script>
+</body>
+</html>
